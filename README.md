@@ -1,4 +1,3 @@
-<div align="center">
 
 # trace-core
 
@@ -9,7 +8,7 @@ Catches what Snyk, Semgrep, and SonarQube miss — because they target human bug
 
 [![npm version](https://img.shields.io/npm/v/trace-core.svg?color=c8533f)](https://www.npmjs.com/package/trace-core)
 [![license](https://img.shields.io/badge/license-MIT-c8533f.svg)](./LICENSE)
-[![tests](https://img.shields.io/badge/tests-53%20passing-2c5f2d.svg)](./tests)
+[![Tests](https://github.com/usercodeX-creator/Trace-core/actions/workflows/test.yml/badge.svg)](https://github.com/usercodeX-creator/Trace-core/actions/workflows/test.yml)
 
 </div>
 
