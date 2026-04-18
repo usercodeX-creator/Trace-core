@@ -5,6 +5,16 @@ All notable changes to trace-core will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-04-18
+
+### Added
+- Detector 06: Unsafe sanitization — detects untrusted input reaching dangerous sinks (SQL injection, XSS, command injection, path traversal, deserialization RCE)
+- Taint source table (`src/lib/taint-sources.ts`) covering Python (Flask, Django, CLI, deserialization) and JavaScript/TypeScript (Express, browser APIs, Node.js)
+- Dangerous sink table (`src/lib/dangerous-sinks.ts`) with severity tiers, interpolation detection, and "always dangerous" classification
+- Source + sink co-presence heuristic with false positive filtering: test paths, parameterized queries, sanitizer detection, hardcoded string sinks
+- 21 new tests for unsafe-sanitization detector
+- Example files `examples/unsafe-sinks.py` and `examples/unsafe-sinks.js`
+
 ## [0.3.0] - 2026-04-18
 
 ### Added

@@ -32,7 +32,7 @@ Existing security tools don't catch these defects. They were built for human bug
 
 ## What it detects
 
-trace-core ships **3 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the two open ones catch the most viral, most damaging AI-specific defect classes.
+trace-core ships **4 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the open ones catch the most viral, most damaging AI-specific defect classes.
 
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
@@ -41,7 +41,7 @@ trace-core ships **3 of 7** detection patterns today. The full 7 live in the pai
 | 02 | Deprecated API misuse | Cloud | Using removed or deprecated library functions the model confidently misremembered |
 | 04 | Fake type safety | Cloud | `any` abuse, stripped generics, type assertions that defeat the type system |
 | 05 | **Silent exception handling** | ✅ v0.3.0 | `except: pass`, swallowed errors, catch blocks with empty bodies |
-| 06 | Broken sanitization | Cloud | Unsafe user input reaching sinks through SQL, shell, HTML |
+| 06 | **Broken sanitization** | ✅ v0.4.0 | Unsafe user input reaching sinks through SQL, shell, HTML |
 | 07 | Tautological tests | Cloud | `expect(x).toBe(x)` — AI writes tests that can never fail |
 
 ---
@@ -141,8 +141,8 @@ The OSS / paid split:
 
 | Feature | trace-core (OSS) | Trace Cloud |
 |---|---|---|
-| Patterns #01, #03, #05 | ✅ | ✅ |
-| Patterns #02, #04, #06-#07 | — | ✅ |
+| Patterns #01, #03, #05, #06 | ✅ | ✅ |
+| Patterns #02, #04, #07 | — | ✅ |
 | Pre-commit Gate | ✅ | ✅ + org policies |
 | Auto Fix (AI fix PRs) | — | ✅ |
 | Supply Chain Scanner | — | ✅ |
