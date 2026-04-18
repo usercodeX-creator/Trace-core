@@ -8,7 +8,7 @@ import { runDetectors } from "./engine.js";
 import { formatHuman } from "./output/human.js";
 import { formatJson } from "./output/json.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 4,

@@ -9,7 +9,7 @@ Catches what Snyk, Semgrep, and SonarQube miss — because they target human bug
 
 [![npm version](https://img.shields.io/npm/v/trace-core.svg?color=c8533f)](https://www.npmjs.com/package/trace-core)
 [![license](https://img.shields.io/badge/license-MIT-c8533f.svg)](./LICENSE)
-[![tests](https://img.shields.io/badge/tests-14%20passing-2c5f2d.svg)](./tests)
+[![tests](https://img.shields.io/badge/tests-53%20passing-2c5f2d.svg)](./tests)
 
 </div>
 
@@ -33,7 +33,7 @@ Existing security tools don't catch these defects. They were built for human bug
 
 ## What it detects
 
-trace-core ships **2 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the two open ones catch the most viral, most damaging AI-specific defect classes.
+trace-core ships **3 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the two open ones catch the most viral, most damaging AI-specific defect classes.
 
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
@@ -41,7 +41,7 @@ trace-core ships **2 of 7** detection patterns today. The full 7 live in the pai
 | 03 | **Credential leaks** | ✅ v0.2.0 | Hardcoded API keys, tokens, and secrets that AI eagerly writes in plain text |
 | 02 | Deprecated API misuse | Cloud | Using removed or deprecated library functions the model confidently misremembered |
 | 04 | Fake type safety | Cloud | `any` abuse, stripped generics, type assertions that defeat the type system |
-| 05 | Silent exception handling | Cloud | `except: pass`, swallowed errors, catch blocks with empty bodies |
+| 05 | **Silent exception handling** | ✅ v0.3.0 | `except: pass`, swallowed errors, catch blocks with empty bodies |
 | 06 | Broken sanitization | Cloud | Unsafe user input reaching sinks through SQL, shell, HTML |
 | 07 | Tautological tests | Cloud | `expect(x).toBe(x)` — AI writes tests that can never fail |
 
@@ -142,8 +142,8 @@ The OSS / paid split:
 
 | Feature | trace-core (OSS) | Trace Cloud |
 |---|---|---|
-| Patterns #01, #03 | ✅ | ✅ |
-| Patterns #02, #04-#07 | — | ✅ |
+| Patterns #01, #03, #05 | ✅ | ✅ |
+| Patterns #02, #04, #06-#07 | — | ✅ |
 | Pre-commit Gate | ✅ | ✅ + org policies |
 | Auto Fix (AI fix PRs) | — | ✅ |
 | Supply Chain Scanner | — | ✅ |

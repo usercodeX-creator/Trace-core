@@ -5,6 +5,15 @@ All notable changes to trace-core will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-04-18
+
+### Added
+- Detector 05: Silent exception handling — detects empty `except: pass`, empty `catch {}`, `.catch(() => {})`, and log-only handlers in Python and JavaScript/TypeScript
+- Shared exception-pattern parser (`src/parsers/exception-patterns.ts`) for try/catch scanning
+- False positive filtering: test paths, intent comments, re-raise detection, substantive body detection
+- 20 new tests for silent-exception detector
+- Example files `examples/silent-exceptions.py` and `examples/silent-exceptions.js`
+
 ## [0.2.0] - 2026-04-18
 
 ### Added

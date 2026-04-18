@@ -3,7 +3,7 @@ export type Language = "python" | "javascript" | "typescript";
 export type Severity = "critical" | "high" | "medium" | "low";
 
 export type DetectorId = "hallucinated-deps" | "deprecated-api" | "credential-leak" |
-                        "fake-type-safety" | "silent-catch" | "unsafe-sanitize" | "tautological-test";
+                        "fake-type-safety" | "silent-exception" | "unsafe-sanitize" | "tautological-test";
 
 export interface Detection {
   detector: DetectorId;
