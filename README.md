@@ -1,15 +1,183 @@
+<div align="center">
+
 # trace-core
 
-> AI can write. Trace can read.
+### AI can write. Trace can read.
 
-Open-source security checker for AI-generated code. Detects defects that existing tools miss because they target human-written vulnerabilities, not LLM-specific failure modes.
+**Open-source security checker for AI-generated code.**
+Catches what Snyk, Semgrep, and SonarQube miss — because they target human bugs, not LLM bugs.
 
-## Quick Start
+[![npm version](https://img.shields.io/npm/v/trace-core.svg?color=c8533f)](https://www.npmjs.com/package/trace-core)
+[![license](https://img.shields.io/badge/license-MIT-c8533f.svg)](./LICENSE)
+[![tests](https://img.shields.io/badge/tests-14%20passing-2c5f2d.svg)](./tests)
+
+</div>
+
+---
+
+## The problem
+
+In 2026, nearly half of all code shipped to production is written by AI assistants — Cursor, Claude Code, Copilot, Lovable, Replit Agent. The speed is real. The risks are equally real.
+
+- **Moltbook (Feb 2026)**: Wiz exposed 1.5M API keys and 35K emails — founder wrote zero lines of code, deployed AI output as-is.
+- **Axios (Mar 2026)**: Maintainer account hijacked, malware slipped into the official package, thousands of downstream apps affected in hours.
+- **Georgia Tech Vibe Security Radar**: CVEs attributed to AI coding tools went from 6 in January to 35 in March 2026. Real number estimated 5–10× higher.
+
+Veracode reports **45% of AI-generated code contains security flaws**. Cloud Security Alliance puts it at **62%**. SonarSource says **42% of committed code is now AI-written or AI-assisted**.
+
+Existing security tools don't catch these defects. They were built for human bugs — SQL injection, buffer overflows, known CVEs. AI makes different mistakes, in different places, for different reasons.
+
+**trace-core is built from day one for the failure modes of LLMs.**
+
+---
+
+## What it detects
+
+trace-core ships **2 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the two open ones catch the most viral, most damaging AI-specific defect classes.
+
+| # | Pattern | Status | What it catches |
+|---|---|---|---|
+| 01 | **Hallucinated dependencies** | ✅ v0.1.0 | Imports of packages that don't exist on npm or PyPI — the "slopsquatting" attack vector |
+| 03 | **Credential leaks** | 🚧 next | Hardcoded API keys, tokens, and secrets that AI eagerly writes in plain text |
+| 02 | Deprecated API misuse | Cloud | Using removed or deprecated library functions the model confidently misremembered |
+| 04 | Fake type safety | Cloud | `any` abuse, stripped generics, type assertions that defeat the type system |
+| 05 | Silent exception handling | Cloud | `except: pass`, swallowed errors, catch blocks with empty bodies |
+| 06 | Broken sanitization | Cloud | Unsafe user input reaching sinks through SQL, shell, HTML |
+| 07 | Tautological tests | Cloud | `expect(x).toBe(x)` — AI writes tests that can never fail |
+
+---
+
+## Demo
 
 ```bash
-npx trace-check your-file.py
+$ cat test.py
+import numpy
+import pandas as pd
+import fake_library_that_does_not_exist_9999
+from totally_real_package_xyz import something
+
+$ npx trace-check test.py
+
+trace-check v0.1.0
+
+test.py
+  ✗ critical  line 3    Package "fake_library_that_does_not_exist_9999" not found on PyPI
+               >  import fake_library_that_does_not_exist_9999
+  ✗ critical  line 4    Package "totally_real_package_xyz" not found on PyPI
+               >  from totally_real_package_xyz import something
+
+Summary: 2 issues found across 1 file.
 ```
+
+Works on `.py`, `.js`, `.ts`, `.jsx`, `.tsx`. Exits with code `1` when issues are found — drop it straight into CI.
+
+---
+
+## Quick start
+
+```bash
+# One-off check
+npx trace-check your-file.py
+
+# Install locally
+npm install -D trace-core
+
+# In package.json scripts
+"check": "trace-check src/**/*.ts"
+
+# JSON output for tooling
+npx trace-check --json src/index.ts
+```
+
+### As a git pre-commit hook
+
+```bash
+# .git/hooks/pre-commit
+#!/bin/sh
+npx trace-check $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|jsx|tsx)$')
+```
+
+Block commits with hallucinated imports before they ever reach the repo.
+
+---
+
+## How it works
+
+trace-core does three things, well:
+
+1. **Parse.** Language-aware import extraction — Python `import`/`from`, JavaScript `import`/`require`, including scoped packages and `node:` prefixes.
+2. **Filter.** Standard library modules and relative imports are excluded. No false positives for `import os` or `import "./local"`.
+3. **Verify.** Each external package is checked against its registry — PyPI for Python, npm for JS/TS — in parallel, with response caching.
+
+If a package doesn't exist in the registry, it's flagged as **critical**. Either it's a typo, a hallucination, or — worst case — a real attacker has registered a typo-squatted package that will soon be a supply chain attack.
+
+No AST. No tree-sitter. No heavyweight analyzer. ~400 lines of TypeScript, designed to stay small and stay readable.
+
+---
+
+## Architecture
+
+trace-core is built from day one to accept five extensions without a rewrite:
+
+```
+Phase 1 (now)   → Core detection (7 patterns)
+Phase 2         → Pre-commit Gate (commit blocking)
+Phase 3         → Auto Fix (AI-generated fix PRs)
+Phase 4         → Supply Chain Scanner (dependency diff monitoring)
+Phase 5         → Organization Analytics (aggregated dashboards)
+Phase 6         → Compliance Kit (audit logs, regulatory reports)
+```
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the design principles — pluggable detectors, forward-compatible schemas, external-ready APIs, identity separation, fail-loudly.
+
+---
+
+## Paid tier
+
+trace-core is MIT. Free forever. But it ships 2 of 7 detection patterns.
+
+The full 7, plus Auto Fix, Supply Chain scanning, organization analytics, and compliance reporting, live in **Trace Cloud** — a hosted SaaS product. Pricing and waitlist: *(coming soon — LP in the next days)*.
+
+The OSS / paid split:
+
+| Feature | trace-core (OSS) | Trace Cloud |
+|---|---|---|
+| Patterns #01, #03 | ✅ | ✅ |
+| Patterns #02, #04-#07 | — | ✅ |
+| Pre-commit Gate | ✅ | ✅ + org policies |
+| Auto Fix (AI fix PRs) | — | ✅ |
+| Supply Chain Scanner | — | ✅ |
+| Analytics Dashboard | — | ✅ |
+| Compliance Kit | — | ✅ |
+| Interface | CLI, GitHub Action | + Web, Slack, API |
+
+---
+
+## Contributing
+
+This project is deliberately small. Contributions welcome in these areas:
+
+- **More languages.** Go, Rust, Java parsers.
+- **Additional stdlib lists.** The Python stdlib filter is a pragmatic subset — PRs welcome for exhaustiveness.
+- **Test cases.** Edge cases for import parsing that aren't covered yet.
+- **Documentation.** Examples, blog posts, tutorials.
+
+What's **not** welcome (for now): new detection patterns. Those land in the paid tier first, OSS later. This is how the project stays funded and sustainable.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) *(coming soon)*.
+
+---
 
 ## License
 
-MIT
+MIT © 2026 Trace. See [LICENSE](./LICENSE).
+
+---
+
+<div align="center">
+
+**Made with discipline, not hype.**
+
+[Website](https://trace.dev) *(coming soon)* · [Trace Cloud](https://trace.dev/cloud) *(coming soon)* · [Contact](mailto:hi@trace.dev) *(coming soon)*
+
+</div>

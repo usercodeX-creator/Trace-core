@@ -1,8 +1,19 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 *.tsbuildinfo
-.DS_Store
-*.log
+
+# Coverage
 coverage/
+
+# Environment
 .env
-test-input.py
+.env.local
+
+# Logs
+*.log
+
+# OS
+.DS_Store
