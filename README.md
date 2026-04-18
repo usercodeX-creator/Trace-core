@@ -38,7 +38,7 @@ trace-core ships **2 of 7** detection patterns today. The full 7 live in the pai
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
 | 01 | **Hallucinated dependencies** | ✅ v0.1.0 | Imports of packages that don't exist on npm or PyPI — the "slopsquatting" attack vector |
-| 03 | **Credential leaks** | 🚧 next | Hardcoded API keys, tokens, and secrets that AI eagerly writes in plain text |
+| 03 | **Credential leaks** | ✅ v0.2.0 | Hardcoded API keys, tokens, and secrets that AI eagerly writes in plain text |
 | 02 | Deprecated API misuse | Cloud | Using removed or deprecated library functions the model confidently misremembered |
 | 04 | Fake type safety | Cloud | `any` abuse, stripped generics, type assertions that defeat the type system |
 | 05 | Silent exception handling | Cloud | `except: pass`, swallowed errors, catch blocks with empty bodies |
