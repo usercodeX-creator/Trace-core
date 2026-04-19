@@ -10,8 +10,6 @@ Catches what Snyk, Semgrep, and SonarQube miss — because they target human bug
 [![license](https://img.shields.io/badge/license-MIT-c8533f.svg)](./LICENSE)
 [![Tests](https://github.com/usercodeX-creator/Trace-core/actions/workflows/test.yml/badge.svg)](https://github.com/usercodeX-creator/Trace-core/actions/workflows/test.yml)
 
-</div>
-
 ---
 
 ## The problem
@@ -32,7 +30,7 @@ Existing security tools don't catch these defects. They were built for human bug
 
 ## What it detects
 
-trace-core ships **4 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the open ones catch the most viral, most damaging AI-specific defect classes.
+trace-core ships **4 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the four open ones catch the most viral, most damaging AI-specific defect classes.
 
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
@@ -57,7 +55,7 @@ from totally_real_package_xyz import something
 
 $ npx trace-check test.py
 
-trace-check v0.1.0
+trace-check v0.4.0
 
 test.py
   ✗ critical  line 3    Package "fake_library_that_does_not_exist_9999" not found on PyPI
@@ -110,7 +108,7 @@ trace-core does three things, well:
 
 If a package doesn't exist in the registry, it's flagged as **critical**. Either it's a typo, a hallucination, or — worst case — a real attacker has registered a typo-squatted package that will soon be a supply chain attack.
 
-No AST. No tree-sitter. No heavyweight analyzer. ~400 lines of TypeScript, designed to stay small and stay readable.
+No AST. No tree-sitter. No heavyweight analyzer. Small, readable TypeScript — designed to stay that way.
 
 ---
 
@@ -133,7 +131,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the design principles — pluggable
 
 ## Paid tier
 
-trace-core is MIT. Free forever. But it ships 2 of 7 detection patterns.
+trace-core is MIT. Free forever. But it ships 4 of 7 detection patterns.
 
 The full 7, plus Auto Fix, Supply Chain scanning, organization analytics, and compliance reporting, live in **Trace Cloud** — a hosted SaaS product. Pricing and waitlist: *(coming soon — LP in the next days)*.
 
@@ -177,6 +175,6 @@ MIT © 2026 Trace. See [LICENSE](./LICENSE).
 
 **Made with discipline, not hype.**
 
-[Website](https://trace.dev) *(coming soon)* · [Trace Cloud](https://trace.dev/cloud) *(coming soon)* · [Contact](mailto:hi@trace.dev) *(coming soon)*
+[Website](https://tracecheck.dev) · [GitHub](https://github.com/usercodeX-creator/Trace-core) · [Contact](mailto:hi@tracecheck.dev)
 
 </div>

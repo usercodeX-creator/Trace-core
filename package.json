@@ -18,6 +18,14 @@
   "keywords": ["ai", "security", "vibe-coding", "code-review", "llm", "hallucination", "slopsquatting"],
   "author": "Trace",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usercodeX-creator/Trace-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/usercodeX-creator/Trace-core/issues"
+  },
+  "homepage": "https://tracecheck.dev",
   "engines": { "node": ">=18.0.0" },
   "dependencies": {
     "chalk": "^5.3.0",
