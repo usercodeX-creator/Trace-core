@@ -5,6 +5,16 @@ All notable changes to trace-core will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-04-21
+
+### Added
+- Detector: `deprecated-api` (medium) — catches misuse of non-existent or deprecated stdlib/framework APIs in Python and JS/TS (e.g., `os.exists`, `.has_key`, `.contains()`, `escape()`)
+- Detector: `fake-type-safety` (medium/high) — catches `: any`, `as any`, `@ts-ignore`/`@ts-nocheck`/`@ts-expect-error` without explanation, and Python `# type: ignore` / `Any` equivalents
+- Detector: `tautological-test` (high) — catches tautological assertions (`expect(true).toBe(true)`, `assert True`), skipped tests without reason (`it.skip`, `xit`, `@pytest.mark.skip()`)
+
+### Detectors
+trace-core now ships all 7 detection patterns previously listed as roadmap. No more "Cloud — coming soon" — everything is open source.
+
 ## [0.4.0] - 2026-04-18
 
 ### Added

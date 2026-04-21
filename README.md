@@ -30,17 +30,17 @@ Existing security tools don't catch these defects. They were built for human bug
 
 ## What it detects
 
-trace-core ships **4 of 7** detection patterns today. The full 7 live in the paid [Trace Cloud](#paid-tier) tier — but the four open ones catch the most viral, most damaging AI-specific defect classes.
+trace-core ships **all 7** detection patterns — fully open source, no paid tier required.
 
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
 | 01 | **Hallucinated dependencies** | ✅ v0.1.0 | Imports of packages that don't exist on npm or PyPI — the "slopsquatting" attack vector |
+| 02 | **Deprecated API misuse** | ✅ v0.5.0 | Using removed or deprecated library functions the model confidently misremembered |
 | 03 | **Credential leaks** | ✅ v0.2.0 | Hardcoded API keys, tokens, and secrets that AI eagerly writes in plain text |
-| 02 | Deprecated API misuse | Cloud | Using removed or deprecated library functions the model confidently misremembered |
-| 04 | Fake type safety | Cloud | `any` abuse, stripped generics, type assertions that defeat the type system |
+| 04 | **Fake type safety** | ✅ v0.5.0 | `any` abuse, `@ts-ignore`/`@ts-nocheck`, type assertions that defeat the type system |
 | 05 | **Silent exception handling** | ✅ v0.3.0 | `except: pass`, swallowed errors, catch blocks with empty bodies |
 | 06 | **Broken sanitization** | ✅ v0.4.0 | Unsafe user input reaching sinks through SQL, shell, HTML |
-| 07 | Tautological tests | Cloud | `expect(x).toBe(x)` — AI writes tests that can never fail |
+| 07 | **Tautological tests** | ✅ v0.5.0 | `expect(x).toBe(x)` — AI writes tests that can never fail |
 
 ---
 
@@ -55,7 +55,7 @@ from totally_real_package_xyz import something
 
 $ npx trace-check test.py
 
-trace-check v0.4.0
+trace-check v0.5.0
 
 test.py
   ✗ critical  line 3    Package "fake_library_that_does_not_exist_9999" not found on PyPI
