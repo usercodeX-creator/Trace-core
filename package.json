@@ -17,7 +17,8 @@
     "dev": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "rm -rf dist && npm run build && npm test"
   },
   "keywords": [
     "ai",
