@@ -9,11 +9,16 @@ import { meaninglessTest } from "./meaningless-test.js";
 import { goDetectors } from "./go/index.js";
 import { rustDetectors } from "./rust/index.js";
 import { rubyDetectors } from "./ruby/index.js";
+import { missingAwait } from "./missing-await.js";
+import { insecureRng } from "./insecure-rng.js";
+import { dynamicEval } from "./dynamic-eval.js";
+import { hardcodedLocalhost } from "./hardcoded-localhost.js";
+import { envNoFallback } from "./env-no-fallback.js";
 
 /**
  * Registry of all active detectors.
  *
- * v0.6.0: 19 detectors — Python, JavaScript, TypeScript, Go, Rust, Ruby.
+ * v0.7.0: 24 detectors — Python, JavaScript, TypeScript, Go, Rust, Ruby.
  */
 export const detectors: Detector[] = [
   hallucinatedDeps,
@@ -26,4 +31,9 @@ export const detectors: Detector[] = [
   ...goDetectors,
   ...rustDetectors,
   ...rubyDetectors,
+  missingAwait,
+  insecureRng,
+  dynamicEval,
+  hardcodedLocalhost,
+  envNoFallback,
 ];

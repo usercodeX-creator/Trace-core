@@ -6,7 +6,8 @@ export type DetectorId = "hallucinated-deps" | "deprecated-api" | "credential-le
                         "fake-type-safety" | "silent-exception" | "unsafe-sanitize" | "tautological-test" |
                         "go/slopsquatting" | "go/error-ignored" | "go/sprintf-sql" | "go/hardcoded-secret" |
                         "rust/unwrap-abuse" | "rust/unsafe-block" | "rust/todo-macro" | "rust/panic-macro" |
-                        "ruby/mass-assignment" | "ruby/string-interpolation-sql" | "ruby/silent-rescue" | "ruby/eval-injection";
+                        "ruby/mass-assignment" | "ruby/string-interpolation-sql" | "ruby/silent-rescue" | "ruby/eval-injection" |
+                        "missing-await" | "insecure-rng" | "dynamic-eval" | "hardcoded-localhost" | "env-no-fallback";
 
 export interface Detection {
   detector: DetectorId;
