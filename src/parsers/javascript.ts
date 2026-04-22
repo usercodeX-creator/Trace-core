@@ -1,3 +1,5 @@
+import { LOCAL_PREFIXES_JS, isLocalImport, SCOPED_PKG_RE } from "../detectors/_shared/local-imports.js";
+
 export interface ParsedImport {
   packageName: string;
   line: number;
@@ -16,17 +18,17 @@ const NODE_BUILTINS = new Set([
  * Scoped packages: @scope/name/sub → @scope/name
  * Regular packages: name/sub → name
  *
- * Returns null for relative/absolute paths and node: builtins.
+ * Returns null for relative/absolute paths, node: builtins, and
+ * framework path aliases (@/, ~/, #/, @@/).
  */
 function normalizeSpecifier(specifier: string): string | null {
-  // Skip relative and absolute imports
-  if (specifier.startsWith(".") || specifier.startsWith("/")) return null;
-
-  // Skip node: prefix builtins
-  if (specifier.startsWith("node:")) return null;
+  // Skip local imports: relative, absolute, path aliases, node: builtins
+  if (isLocalImport(specifier, LOCAL_PREFIXES_JS)) return null;
 
   // Scoped packages: @scope/name[/sub]
   if (specifier.startsWith("@")) {
+    // Reject path-alias shaped specifiers (empty or invalid scope)
+    if (!SCOPED_PKG_RE.test(specifier)) return null;
     const parts = specifier.split("/");
     if (parts.length < 2) return null;
     const pkg = `${parts[0]}/${parts[1]}`;

@@ -27,3 +27,25 @@ describe("Python parser", () => {
     expect(result).toEqual([]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v0.6.1 regression — relative Python imports must be skipped
+// ---------------------------------------------------------------------------
+
+describe("Python parser: relative import exclusions", () => {
+  const relativeCases: [string, string][] = [
+    ["from . import utils", "from . import"],
+    ["from .models import User", "from .models"],
+    ["from ..utils import helper", "from ..utils"],
+    ["from ...deep.module import fn", "from ...deep"],
+    ["from .models.user import User", "from .models.user"],
+    ["from .foo import bar, baz", "from .foo multi-import"],
+  ];
+
+  for (const [code, label] of relativeCases) {
+    it(`skips ${label}`, () => {
+      const result = extractImports(code);
+      expect(result).toEqual([]);
+    });
+  }
+});

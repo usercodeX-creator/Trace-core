@@ -5,6 +5,23 @@ All notable changes to trace-core will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-04-22
+
+### Fixed
+- hallucinated-deps: false positives on framework path aliases
+  (`@/`, `~/`, `#/`, `@@/`) in Next.js / Vite / Nuxt / SvelteKit.
+  Affected JS/TS and Go detectors. Now correctly skipped via centralized
+  `LOCAL_PREFIXES` allowlist in `src/detectors/_shared/local-imports.ts`.
+- Tightened scoped-package regex to require non-empty scope name — `@/lib`
+  no longer matches as a valid scoped npm package.
+- Go slopsquatting detector now skips relative (`./`, `../`) and
+  module-internal (`internal/`) import paths.
+
+## [0.6.0] - 2026-04-22
+
+### Added
+- Go, Rust, Ruby language support with 12 new language-specific detectors.
+
 ## [0.5.0] - 2026-04-21
 
 ### Added

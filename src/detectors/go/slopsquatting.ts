@@ -1,4 +1,5 @@
 import type { Detector, DetectorContext, Detection } from "../../types.js";
+import { LOCAL_PREFIXES_GO, isLocalImport } from "../_shared/local-imports.js";
 
 /**
  * Go stdlib packages — single-word imports matching these are safe.
@@ -75,6 +76,12 @@ function extractGoImports(content: string): Array<{ path: string; line: number; 
 }
 
 function isSuspicious(importPath: string): string | null {
+  // Skip local/relative imports
+  if (isLocalImport(importPath, LOCAL_PREFIXES_GO)) return null;
+
+  // Skip internal/ paths (module-internal, not a package name)
+  if (importPath === "internal" || importPath.startsWith("internal/") || importPath.includes("/internal/")) return null;
+
   // Trusted hosts — always allow
   for (const host of TRUSTED_HOSTS) {
     if (importPath.startsWith(host)) return null;

@@ -75,3 +75,50 @@ describe("Go Slopsquatting Detector", () => {
     expect(d).toHaveLength(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// v0.6.1 regression — local/relative/internal Go imports must NOT trigger
+// ---------------------------------------------------------------------------
+
+describe("Go Slopsquatting: local and internal imports must NOT trigger", () => {
+  const safeCases: [string, string][] = [
+    ['import "./localpackage"', "relative ./"],
+    ['import "../sibling/pkg"', "relative ../"],
+    ['import "internal/auth"', "internal/ prefix"],
+    ['import "mymodule/internal/secret"', "internal/ segment"],
+  ];
+
+  for (const [code, label] of safeCases) {
+    it(`does not flag: ${label}`, async () => {
+      const ctx = goCtx(code);
+      const d = await goSlopsquatting.run(ctx);
+      expect(d).toHaveLength(0);
+    });
+  }
+
+  it("multi-line block with relative + internal — 0 detections", async () => {
+    const ctx = goCtx([
+      `import (`,
+      `  "fmt"`,
+      `  "./local"`,
+      `  "../parent/pkg"`,
+      `  "internal/auth"`,
+      `  "mymod/internal/db"`,
+      `)`,
+    ].join("\n"));
+    const d = await goSlopsquatting.run(ctx);
+    expect(d).toHaveLength(0);
+  });
+
+  it("still flags suspicious prefix even with internal imports present", async () => {
+    const ctx = goCtx([
+      `import (`,
+      `  "internal/auth"`,
+      `  "super-logger"`,
+      `)`,
+    ].join("\n"));
+    const d = await goSlopsquatting.run(ctx);
+    expect(d).toHaveLength(1);
+    expect(d[0]!.message).toContain("super-");
+  });
+});
