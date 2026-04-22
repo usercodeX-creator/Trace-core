@@ -17,3 +17,8 @@ coverage/
 
 # OS
 .DS_Store
+
+# Internal audit / benchmark reports (never public)
+AUDIT_*.md
+BENCHMARK_*.md
+docs/internal/

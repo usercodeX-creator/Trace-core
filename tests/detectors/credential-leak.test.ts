@@ -183,4 +183,54 @@ describe("Credential Leak Detector", () => {
     expect(d[0]!.line).toBe(3);
     expect(d[0]!.column).toBeGreaterThan(1);
   });
+
+  // ─── Credential-in-log-call sub-rule ────────────────────────────
+
+  it("20. console.log with apiKey variable → medium", async () => {
+    const ctx = makeCtx(`console.log("User logged in with token:", apiKey);`);
+    const d = await credentialLeak.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("log/print call"))).toBe(true);
+    expect(d.some((x) => x.severity === "medium")).toBe(true);
+  });
+
+  it("21. Python print with secret in f-string → medium", async () => {
+    const ctx: DetectorContext = {
+      filePath: "app.py",
+      content: `print(f"Authenticating with {secret}")`,
+      language: "python",
+    };
+    const d = await credentialLeak.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("log/print call"))).toBe(true);
+  });
+
+  it("22. logger.info with jwtToken → medium", async () => {
+    const ctx: DetectorContext = {
+      filePath: "auth.ts",
+      content: `logger.info("JWT:", jwtToken);`,
+      language: "typescript",
+    };
+    const d = await credentialLeak.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("log/print call"))).toBe(true);
+  });
+
+  it("23. console.log with string-only content → does NOT fire", async () => {
+    const ctx = makeCtx(`console.log("No API key provided. Please set API_KEY env var.");`);
+    const d = await credentialLeak.run(ctx);
+    const logHits = d.filter((x) => x.message.includes("log/print call"));
+    expect(logHits).toHaveLength(0);
+  });
+
+  it("24. Python print with string-only content → does NOT fire", async () => {
+    const ctx: DetectorContext = {
+      filePath: "app.py",
+      content: `print("password reset successful")`,
+      language: "python",
+    };
+    const d = await credentialLeak.run(ctx);
+    const logHits = d.filter((x) => x.message.includes("log/print call"));
+    expect(logHits).toHaveLength(0);
+  });
 });

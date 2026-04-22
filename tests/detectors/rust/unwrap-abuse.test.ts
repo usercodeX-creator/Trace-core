@@ -24,7 +24,7 @@ describe("Rust Unwrap Abuse Detector", () => {
     const d = await rustUnwrapAbuse.run(ctx);
     expect(d).toHaveLength(4);
     expect(d[0]!.severity).toBe("medium");
-    expect(d[0]!.message).toContain(".unwrap() calls");
+    expect(d[0]!.message).toContain(".unwrap()/.expect() calls");
     expect(d[1]!.severity).toBe("low");
     expect(d[2]!.severity).toBe("low");
     expect(d[3]!.severity).toBe("low");
@@ -61,5 +61,45 @@ describe("Rust Unwrap Abuse Detector", () => {
     };
     const d = await rustUnwrapAbuse.run(ctx);
     expect(d).toHaveLength(0);
+  });
+
+  // ─── .expect() abuse ──────────────────────────────────────────────
+
+  it("7. .expect() in production code → fires", async () => {
+    const ctx = rustCtx([
+      `pub fn load_config() -> Config {`,
+      `    let file = File::open("config.toml").expect("config should exist");`,
+      `    serde_json::from_reader(file).expect("config should parse")`,
+      `}`,
+    ].join("\n"));
+    const d = await rustUnwrapAbuse.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(2);
+    expect(d.some((x) => x.message.includes(".expect()"))).toBe(true);
+  });
+
+  it("8. .expect() in test function → does NOT fire", async () => {
+    const ctx = rustCtx([
+      `#[cfg(test)]`,
+      `mod tests {`,
+      `  #[test]`,
+      `  fn test_parsing() {`,
+      `    let result = parse("valid").expect("test input is valid");`,
+      `    assert_eq!(result, Expected);`,
+      `  }`,
+      `}`,
+    ].join("\n"));
+    const d = await rustUnwrapAbuse.run(ctx);
+    expect(d).toHaveLength(0);
+  });
+
+  it("9. mixed .unwrap() and .expect() counts toward file-level threshold", async () => {
+    const ctx = rustCtx([
+      `let a = x.unwrap();`,
+      `let b = y.expect("reason");`,
+      `let c = z.unwrap();`,
+    ].join("\n"));
+    const d = await rustUnwrapAbuse.run(ctx);
+    expect(d).toHaveLength(4); // 1 medium file-level + 3 low
+    expect(d[0]!.severity).toBe("medium");
   });
 });

@@ -55,9 +55,36 @@ export const unsafeSanitization: Detector = {
     const detections: Detection[] = [];
     const detectedLines = new Set<number>(); // prevent duplicates per line
 
+    // JSX dangerouslySetInnerHTML bypass: flag {{ __html: variable }} unconditionally
+    if (ctx.language === "javascript" || ctx.language === "typescript") {
+      const jsxDangerousRe = /dangerouslySetInnerHTML\s*=\s*\{\{\s*__html\s*:\s*([^"'\s}][^}]*?)\s*\}\s*\}/;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!;
+        const m = jsxDangerousRe.exec(line);
+        if (m) {
+          detections.push({
+            detector: "unsafe-sanitize",
+            severity: "high",
+            file: ctx.filePath,
+            line: i + 1,
+            column: m.index + 1,
+            message: "XSS: dangerouslySetInnerHTML with dynamic value — sanitize with DOMPurify or equivalent",
+            rawCode: line.trim().length > 100 ? line.trim().slice(0, 100) + "..." : line.trim(),
+            suggestedFix: null,
+            dependencyContext: null,
+            auditTrail: null,
+          });
+          detectedLines.add(i + 1);
+        }
+      }
+    }
+
     for (const sink of sinkMatches) {
       // Avoid duplicate detections on the same line
       if (detectedLines.has(sink.line)) continue;
+
+      // dangerouslySetInnerHTML is handled exclusively by the JSX bypass above
+      if (sink.label === "dangerouslySetInnerHTML") continue;
 
       const sinkLine = lines[sink.line - 1] ?? "";
 

@@ -151,6 +151,56 @@ export const credentialLeak: Detector = {
       }
     }
 
+    // 4. Credential-in-log-call sub-rule
+    const LOG_CALL_RE = /\b(console\.(?:log|info|warn|error|debug)|print|logger\.(?:info|debug|warn|error))\s*\(/;
+    const CRED_VAR_IN_ARGS_RE = /\b\w*(secret|password|passwd|token|api[_-]?key|apikey|auth[_-]?token|jwt|session[_-]?id|access[_-]?token|refresh[_-]?token|client[_-]?secret|private[_-]?key)\w*\b/i;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]!;
+      const lineNum = i + 1;
+
+      // Skip if already detected on this line
+      if (detections.some((d) => d.line === lineNum)) continue;
+
+      if (!LOG_CALL_RE.test(line)) continue;
+
+      // Strip string literals to isolate variable references
+      // Handle f-strings: preserve {expr} interpolation by extracting them first
+      const fstringExprs: string[] = [];
+      line.replace(/\{([^}]+)\}/g, (_m, expr) => { fstringExprs.push(expr); return ""; });
+
+      // Strip all string literals from the line
+      const stripped = line.replace(/["'`][^"'`]*["'`]/g, '""');
+
+      // Combine: check stripped line + f-string expressions for credential variable names
+      const combined = stripped + " " + fstringExprs.join(" ");
+
+      // The credential keyword must appear as part of an identifier outside strings
+      if (CRED_VAR_IN_ARGS_RE.test(combined)) {
+        // Verify it's not just the keyword inside a remaining string literal
+        const credMatch = combined.match(CRED_VAR_IN_ARGS_RE);
+        if (credMatch) {
+          const token = credMatch[0];
+          // Ensure token is not inside a string in the stripped version
+          // (it should be a bare identifier, not e.g. in a remaining "" pair)
+          if (!/["'`]/.test(token)) {
+            detections.push({
+              detector: "credential-leak",
+              severity: "medium",
+              file: ctx.filePath,
+              line: lineNum,
+              column: LOG_CALL_RE.exec(line)!.index + 1,
+              message: "Credential variable referenced in log/print call",
+              rawCode: line.trim().length > 100 ? line.trim().slice(0, 100) + "..." : line.trim(),
+              suggestedFix: null,
+              dependencyContext: null,
+              auditTrail: null,
+            });
+          }
+        }
+      }
+    }
+
     // 5. Sort by line number, then severity
     const severityOrder: Record<string, number> = {
       critical: 0,

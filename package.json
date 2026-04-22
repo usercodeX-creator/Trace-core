@@ -1,6 +1,6 @@
 {
   "name": "trace-core",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "description": "AI can write. Trace can read. Open source security checker for AI-generated code.",
   "type": "module",
   "main": "dist/index.js",

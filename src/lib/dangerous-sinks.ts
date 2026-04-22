@@ -46,6 +46,8 @@ const PYTHON_SINKS: SinkDefinition[] = [
   { regex: /subprocess\.call\s*\(.*shell\s*=\s*True/, category: "Command injection", label: "subprocess.call with shell=True", severityInterpolated: "critical", alwaysDangerous: false, isAssignment: false },
   { regex: /subprocess\.run\s*\(.*shell\s*=\s*True/, category: "Command injection", label: "subprocess.run with shell=True", severityInterpolated: "critical", alwaysDangerous: false, isAssignment: false },
   { regex: /subprocess\.Popen\s*\(.*shell\s*=\s*True/, category: "Command injection", label: "subprocess.Popen with shell=True", severityInterpolated: "critical", alwaysDangerous: false, isAssignment: false },
+  { regex: /subprocess\.check_output\s*\(.*shell\s*=\s*True/, category: "Command injection", label: "subprocess.check_output with shell=True", severityInterpolated: "critical", alwaysDangerous: false, isAssignment: false },
+  { regex: /subprocess\.check_call\s*\(.*shell\s*=\s*True/, category: "Command injection", label: "subprocess.check_call with shell=True", severityInterpolated: "critical", alwaysDangerous: false, isAssignment: false },
   // Path traversal
   { regex: /\bopen\s*\(/, category: "Path traversal", label: "open()", severityInterpolated: "high", alwaysDangerous: false, isAssignment: false },
   // Deserialization

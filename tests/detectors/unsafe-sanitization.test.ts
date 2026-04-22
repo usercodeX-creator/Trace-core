@@ -336,4 +336,51 @@ cursor.execute(f"SELECT * FROM users WHERE id = " + user_id)
     const sqlDetections = d.filter((x) => x.message.includes("SQL injection"));
     expect(sqlDetections).toHaveLength(1);
   });
+
+  // ─── JSX dangerouslySetInnerHTML ────────────────────────────────
+
+  it("JSX dangerouslySetInnerHTML with variable → fires unconditionally", async () => {
+    const ctx: DetectorContext = {
+      filePath: "Post.tsx",
+      content: `export function Post({ body }) {\n  return <div dangerouslySetInnerHTML={{ __html: body }} />;\n}`,
+      language: "typescript",
+    };
+    const d = await unsafeSanitization.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("dangerouslySetInnerHTML"))).toBe(true);
+    expect(d.some((x) => x.severity === "high")).toBe(true);
+  });
+
+  // ─── subprocess.run family ───────────────────────────────────────
+
+  it("subprocess.run with shell=True + taint → fires", async () => {
+    const ctx = pyCtx(`from flask import request\n\npath = request.args.get("path")\nsubprocess.run(f"rm -rf {path}", shell=True)`);
+    const d = await unsafeSanitization.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("Command injection"))).toBe(true);
+  });
+
+  it("subprocess.check_output with shell=True + taint → fires", async () => {
+    const ctx = pyCtx(`from flask import request\n\ncmd = request.args.get("cmd")\nsubprocess.check_output(f"echo {cmd}", shell=True)`);
+    const d = await unsafeSanitization.run(ctx);
+    expect(d.length).toBeGreaterThanOrEqual(1);
+    expect(d.some((x) => x.message.includes("Command injection"))).toBe(true);
+  });
+
+  it("subprocess.run with list args (parameterized) → does NOT fire", async () => {
+    const ctx = pyCtx(`subprocess.run(["ls", "-la"], check=True)`);
+    const d = await unsafeSanitization.run(ctx);
+    expect(d).toHaveLength(0);
+  });
+
+  it("JSX dangerouslySetInnerHTML with string literal → does NOT fire", async () => {
+    const ctx: DetectorContext = {
+      filePath: "Disclaimer.tsx",
+      content: `export function Disclaimer() {\n  return <div dangerouslySetInnerHTML={{ __html: "<p>Static notice</p>" }} />;\n}`,
+      language: "typescript",
+    };
+    const d = await unsafeSanitization.run(ctx);
+    const jsxHits = d.filter((x) => x.message.includes("dangerouslySetInnerHTML"));
+    expect(jsxHits).toHaveLength(0);
+  });
 });

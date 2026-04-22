@@ -9,6 +9,7 @@
 import type { Detector, DetectorContext, Detection } from "../../types.js";
 
 const UNWRAP_RE = /\.unwrap\s*\(\)/g;
+const EXPECT_RE = /\.expect\s*\([^)]*\)/g;
 
 function isTestFile(ctx: DetectorContext): boolean {
   if (ctx.filePath.endsWith("_test.rs")) return true;
@@ -32,6 +33,7 @@ export const rustUnwrapAbuse: Detector = {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]!;
       UNWRAP_RE.lastIndex = 0;
+      EXPECT_RE.lastIndex = 0;
       let match: RegExpExecArray | null;
 
       while ((match = UNWRAP_RE.exec(line)) !== null) {
@@ -49,6 +51,22 @@ export const rustUnwrapAbuse: Detector = {
           auditTrail: null,
         });
       }
+
+      while ((match = EXPECT_RE.exec(line)) !== null) {
+        detections.push({
+          detector: "rust/unwrap-abuse" as any,
+          severity: "low",
+          file: ctx.filePath,
+          line: i + 1,
+          column: match.index + 1,
+          message:
+            ".expect() can panic at runtime — use ? operator or proper error handling",
+          rawCode: line.trimStart(),
+          suggestedFix: null,
+          dependencyContext: null,
+          auditTrail: null,
+        });
+      }
     }
 
     // If 3+ unwraps, emit a file-level medium warning at the first occurrence
@@ -60,7 +78,7 @@ export const rustUnwrapAbuse: Detector = {
         file: ctx.filePath,
         line: first.line,
         column: first.column,
-        message: `File contains ${detections.length - 1} .unwrap() calls — consider systematic error handling with Result<T, E>`,
+        message: `File contains ${detections.length - 1} .unwrap()/.expect() calls — consider systematic error handling with Result<T, E>`,
         rawCode: first.rawCode,
         suggestedFix: null,
         dependencyContext: null,
