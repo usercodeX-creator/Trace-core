@@ -30,7 +30,9 @@ Existing security tools don't catch these defects. They were built for human bug
 
 ## What it detects
 
-trace-core ships **all 7** detection patterns — fully open source, no paid tier required.
+trace-core ships **all 19** detection patterns across **6 languages** — fully open source, no paid tier required.
+
+### Python / JavaScript / TypeScript (7 patterns)
 
 | # | Pattern | Status | What it catches |
 |---|---|---|---|
@@ -41,6 +43,33 @@ trace-core ships **all 7** detection patterns — fully open source, no paid tie
 | 05 | **Silent exception handling** | ✅ v0.3.0 | `except: pass`, swallowed errors, catch blocks with empty bodies |
 | 06 | **Broken sanitization** | ✅ v0.4.0 | Unsafe user input reaching sinks through SQL, shell, HTML |
 | 07 | **Tautological tests** | ✅ v0.5.0 | `expect(x).toBe(x)` — AI writes tests that can never fail |
+
+### Go (4 patterns — new in v0.6.0)
+
+| # | Pattern | What it catches |
+|---|---|---|
+| 08 | **Slopsquatting** | Suspicious import paths that may be AI-hallucinated packages |
+| 09 | **Error ignored** | Error return values explicitly discarded with `_` |
+| 10 | **Sprintf SQL** | SQL queries built with `fmt.Sprintf` or string concatenation |
+| 11 | **Hardcoded secret** | API keys, tokens, and credentials in Go source |
+
+### Rust (4 patterns — new in v0.6.0)
+
+| # | Pattern | What it catches |
+|---|---|---|
+| 12 | **Unwrap abuse** | Excessive `.unwrap()` usage that can panic at runtime |
+| 13 | **Unsafe block** | `unsafe` blocks and functions that bypass safety guarantees |
+| 14 | **Todo macro** | `todo!()` / `unimplemented!()` placeholders that panic at runtime |
+| 15 | **Panic macro** | `panic!()` calls where `Result<T, E>` should be used |
+
+### Ruby (4 patterns — new in v0.6.0)
+
+| # | Pattern | What it catches |
+|---|---|---|
+| 16 | **Mass assignment** | ActiveRecord mass assignment without strong parameters |
+| 17 | **SQL interpolation** | String interpolation inside SQL queries |
+| 18 | **Silent rescue** | `rescue` blocks that silently swallow exceptions |
+| 19 | **Eval injection** | `eval` / `send` called with dynamic input |
 
 ---
 
@@ -55,7 +84,7 @@ from totally_real_package_xyz import something
 
 $ npx trace-check test.py
 
-trace-check v0.5.0
+trace-check v0.6.0
 
 test.py
   ✗ critical  line 3    Package "fake_library_that_does_not_exist_9999" not found on PyPI
@@ -66,7 +95,7 @@ test.py
 Summary: 2 issues found across 1 file.
 ```
 
-Works on `.py`, `.js`, `.ts`, `.jsx`, `.tsx`. Exits with code `1` when issues are found — drop it straight into CI.
+Works on `.py`, `.js`, `.ts`, `.jsx`, `.tsx`, `.go`, `.rs`, `.rb`. Exits with code `1` when issues are found — drop it straight into CI.
 
 ---
 
@@ -91,7 +120,7 @@ npx trace-check --json src/index.ts
 ```bash
 # .git/hooks/pre-commit
 #!/bin/sh
-npx trace-check $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|jsx|tsx)$')
+npx trace-check $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|jsx|tsx|go|rs|rb)$')
 ```
 
 Block commits with hallucinated imports before they ever reach the repo.
@@ -117,7 +146,7 @@ No AST. No tree-sitter. No heavyweight analyzer. Small, readable TypeScript — 
 trace-core is built from day one to accept five extensions without a rewrite:
 
 ```
-Phase 1 (now)   → Core detection (7 patterns)
+Phase 1 (now)   → Core detection (19 patterns, 6 languages)
 Phase 2         → Pre-commit Gate (commit blocking)
 Phase 3         → Auto Fix (AI-generated fix PRs)
 Phase 4         → Supply Chain Scanner (dependency diff monitoring)
@@ -154,7 +183,7 @@ The OSS / paid split:
 
 This project is deliberately small. Contributions welcome in these areas:
 
-- **More languages.** Go, Rust, Java parsers.
+- **More languages.** Java, PHP, Dart parsers.
 - **Additional stdlib lists.** The Python stdlib filter is a pragmatic subset — PRs welcome for exhaustiveness.
 - **Test cases.** Edge cases for import parsing that aren't covered yet.
 - **Documentation.** Examples, blog posts, tutorials.

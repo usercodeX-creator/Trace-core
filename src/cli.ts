@@ -8,7 +8,7 @@ import { runDetectors } from "./engine.js";
 import { formatHuman } from "./output/human.js";
 import { formatJson } from "./output/json.js";
 
-const VERSION = "0.4.0";
+const VERSION = "0.6.0";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 4,
@@ -23,6 +23,9 @@ const EXTENSION_MAP: Record<string, Language> = {
   ".ts": "typescript",
   ".jsx": "javascript",
   ".tsx": "typescript",
+  ".go": "go",
+  ".rs": "rust",
+  ".rb": "ruby",
 };
 
 function detectLanguage(filePath: string): Language | null {
@@ -53,7 +56,7 @@ program
       const language = detectLanguage(filePath);
 
       if (!language) {
-        console.error(`Error: unsupported file extension for "${file}". Supported: .py, .js, .ts, .jsx, .tsx`);
+        console.error(`Error: unsupported file extension for "${file}". Supported: .py, .js, .ts, .jsx, .tsx, .go, .rs, .rb`);
         process.exit(2);
       }
 
