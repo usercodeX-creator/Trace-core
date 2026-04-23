@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://tracecheck.dev/og.png" alt="Trace" width="640">
-</p>
-
 <h1 align="center">Trace</h1>
 
 <p align="center">
@@ -109,7 +105,7 @@ Python, JavaScript, TypeScript, Go, Rust, Ruby。
 
 ## 他ツールとの違い
 
-| | Trace | Snyk | Semgrep | SonarQube | Claude `/ultrareview` |
+| | Trace | Snyk | Semgrep | SonarQube | Claude /ultrareview |
 |---|---|---|---|---|---|
 | AI 固有の失敗を対象にしている | ✓ | ✗ | ✗ | ✗ | 部分的 |
 | LLM 中立 (ベンダーロックなし) | ✓ | ✓ | ✓ | ✓ | ✗ |

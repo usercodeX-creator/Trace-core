@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://tracecheck.dev/og.png" alt="Trace" width="640">
-</p>
-
 <h1 align="center">Trace</h1>
 
 <p align="center">
@@ -112,7 +108,7 @@ Detection granularity varies by language. Python, JS, and TS have the deepest co
 
 ## How it compares
 
-| | Trace | Snyk | Semgrep | SonarQube | Claude `/ultrareview` |
+| | Trace | Snyk | Semgrep | SonarQube | Claude /ultrareview |
 |---|---|---|---|---|---|
 | Targets AI-specific failures | ✓ | ✗ | ✗ | ✗ | partial |
 | LLM-neutral (no vendor lock) | ✓ | ✓ | ✓ | ✓ | ✗ |
