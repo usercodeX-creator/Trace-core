@@ -136,20 +136,42 @@ npm install -g trace-core
 
 ## CI integration
 
+### GitHub Actions
+
+One line. Posts a PR comment with grade and detections, uploads SARIF
+to the **Security → Code scanning** tab, and runs in under 30 seconds
+on a clean cache.
+
 ```yaml
 # .github/workflows/trace.yml
 name: Trace
 on: [push, pull_request]
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
 
 jobs:
   trace:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npx trace-core src/
+      - uses: usercodeX-creator/trace-action@v1
+        with:
+          path: src/
 ```
 
-Works the same on GitLab CI, Bitbucket Pipelines, CircleCI, Jenkins. Trace writes to stdout and exits non-zero on detections. That's all a CI needs.
+[Trace Check on the GitHub Marketplace](https://github.com/marketplace/actions/trace-check) · [trace-action repo](https://github.com/usercodeX-creator/trace-action)
+
+### Other CIs (GitLab, Bitbucket, CircleCI, Jenkins, ...)
+
+```yaml
+- run: npx trace-core src/
+```
+
+Trace writes to stdout, exits non-zero on detections, and accepts
+`--json` for machine-readable output. That's all a CI needs.
 
 ## Try it in the browser
 
