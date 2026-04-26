@@ -1,7 +1,7 @@
 {
   "name": "trace-core",
   "version": "0.7.0",
-  "description": "AI can write. Trace can read. Open source security checker for AI-generated code.",
+  "description": "AI can write. Trace can read. TraceCheck — open source security checker for AI-generated code.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -29,7 +29,7 @@
     "hallucination",
     "slopsquatting"
   ],
-  "author": "Trace",
+  "author": "TraceCheck",
   "license": "MIT",
   "repository": {
     "type": "git",

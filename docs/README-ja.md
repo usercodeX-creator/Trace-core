@@ -1,4 +1,4 @@
-<h1 align="center">Trace</h1>
+<h1 align="center">TraceCheck</h1>
 
 <p align="center">
   <strong>AI が書いたコードを、Trace が読む。</strong>
@@ -10,9 +10,9 @@
 
 ---
 
-Trace は AI が生成したコードを対象にした、OSS の静的解析ツールです。LLM だけが書く 24 個の失敗パターン — 存在しないパッケージの import、ソースに直書きされた認証情報、握り潰された例外、何も検証していないテスト、嘘をついている型 — を検出します。
+TraceCheck は AI が生成したコードを対象にした、OSS の静的解析ツールです。LLM だけが書く 24 個の失敗パターン — 存在しないパッケージの import、ソースに直書きされた認証情報、握り潰された例外、何も検証していないテスト、嘘をついている型 — を検出します。
 
-Snyk、Semgrep、SonarQube はこれらを捕まえません。それらは**人間の**バグを前提に作られているからです。AI は違う書き方をします。Trace は違う読み方をします。
+Snyk、Semgrep、SonarQube はこれらを捕まえません。それらは**人間の**バグを前提に作られているからです。AI は違う書き方をします。TraceCheck は違う読み方をします。
 
 ```bash
 npx trace-core your-file.py
@@ -80,7 +80,7 @@ AI が生成するコードの**形**を考えてみてください。
 
 これらは通常の意味でのバグではありません。チュートリアルコードで学習され、もっともらしさに最適化され、スケールで出荷されるモデルの、**予測可能な出力**です。人間のバグ向けに作られたツールがこれらを見逃すのは、この分布の失敗を前提にしていないからです。
 
-Trace はこの分布のために作られました。
+TraceCheck はこの分布のために作られました。
 
 ## クイックスタート
 
@@ -105,7 +105,7 @@ Python, JavaScript, TypeScript, Go, Rust, Ruby。
 
 ## 他ツールとの違い
 
-| | Trace | Snyk | Semgrep | SonarQube | Claude /ultrareview |
+| | TraceCheck | Snyk | Semgrep | SonarQube | Claude /ultrareview |
 |---|---|---|---|---|---|
 | AI 固有の失敗を対象にしている | ✓ | ✗ | ✗ | ✗ | 部分的 |
 | LLM 中立 (ベンダーロックなし) | ✓ | ✓ | ✓ | ✓ | ✗ |
@@ -116,7 +116,7 @@ Python, JavaScript, TypeScript, Go, Rust, Ruby。
 | インストール不要 | ✓ | ✗ | ✗ | ✗ | Claude Code に紐付き |
 | 任意の LLM の出力で動く | ✓ | n/a | n/a | n/a | Claude のみ |
 
-Trace は Snyk や Semgrep の代替ではありません。その**1 つ上の層**です。CVE スキャンは Snyk で、チーム固有のルールは Semgrep で、その 2 つの間にある LLM 特有の失敗を Trace で。
+TraceCheck は Snyk や Semgrep の代替ではありません。その**1 つ上の層**です。CVE スキャンは Snyk で、チーム固有のルールは Semgrep で、その 2 つの間にある LLM 特有の失敗を TraceCheck で。
 
 ## インストール
 
@@ -146,7 +146,7 @@ jobs:
       - run: npx trace-core src/
 ```
 
-GitLab CI、Bitbucket Pipelines、CircleCI、Jenkins でも同様に動きます。Trace は stdout に出力、検出があれば非ゼロで終了します。CI はそれだけあれば充分です。
+GitLab CI、Bitbucket Pipelines、CircleCI、Jenkins でも同様に動きます。TraceCheck は stdout に出力、検出があれば非ゼロで終了します。CI はそれだけあれば充分です。
 
 ## ブラウザで試す
 
@@ -154,9 +154,9 @@ GitLab CI、Bitbucket Pipelines、CircleCI、Jenkins でも同様に動きます
 
 ## 設計思想
 
-**AI 固有に特化、汎用ではない。** Trace は Snyk や Semgrep を置き換えようとしません。モデルが生成するコードで出現する失敗パターン**だけ**を、狭く深く扱います。すべての detector は、実際に AI が本番コードでそのパターンを生成しているのを観測した上で追加されています。
+**AI 固有に特化、汎用ではない。** TraceCheck は Snyk や Semgrep を置き換えようとしません。モデルが生成するコードで出現する失敗パターン**だけ**を、狭く深く扱います。すべての detector は、実際に AI が本番コードでそのパターンを生成しているのを観測した上で追加されています。
 
-**中立な第三者。** Trace は Anthropic、OpenAI、その他どの LLM ベンダーも作っていません。どのモデルの出力でも走ります。AI 企業が自社モデルの欠陥カタログを出すことには構造的な利益相反があります。中立なツールにはそれがありません。
+**中立な第三者。** TraceCheck は Anthropic、OpenAI、その他どの LLM ベンダーも作っていません。どのモデルの出力でも走ります。AI 企業が自社モデルの欠陥カタログを出すことには構造的な利益相反があります。中立なツールにはそれがありません。
 
 **OSS を続ける。** 24 detector はすべて MIT です。利用制限なし、明示的同意なしのテレメトリなし、コア機能を enterprise ティアで囲い込むこともしません。このリポジトリにある、今日の、無料のもので、すべての検出が完結します。
 
@@ -184,7 +184,7 @@ Issue と PR を歓迎します。新しい detector を提案する場合は、
 - それを生成した LLM (Claude / GPT / Cursor など。もしくは "不明、Stack Overflow の AI 回答から発掘")
 - 既存ツールがなぜ見逃すか
 
-新 detector の採用基準は: **「人間は書かない、AI だけが書くパターンであること」**。人間も書くなら、Snyk か Semgrep の領域であって Trace ではありません。
+新 detector の採用基準は: **「人間は書かない、AI だけが書くパターンであること」**。人間も書くなら、Snyk か Semgrep の領域であって TraceCheck ではありません。
 
 ## ライセンス
 
